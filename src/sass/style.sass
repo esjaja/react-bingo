@@ -20,6 +20,16 @@
     cursor: default;
     &:hover
         filter: brightness(50%)
+    &:after
+        content: ""
+        position: absolute
+        height: 80%
+        color: black
+        border: solid 2px black
+        transform: rotate(45deg)
+        opacity: 0
+    &.active:after
+        opacity: 1
 
 .bingoBoard
     display: inline-block
