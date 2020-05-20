@@ -60,43 +60,45 @@ class Board extends React.Component {
 class Game extends React.Component{
   constructor(props) {
     super(props);
-    const allBingo = initializePlayerBoard(this.props.player, this.props.size);
+    let allBingo = initBingoBoard(this.props.player, this.props.size);
     this.state = {
-      player: this.props.player,
-      size: this.props.size,
       bingo: allBingo,
-      bingoIndexLookup: initializePlayerBoardLookup(allBingo),
-      blockState: initializePlayerBoardState(this.props.player, this.props.size),
+      bingoIndexLookup: initBingoLookup(allBingo),
+      blockState: initState(this.props.player, this.props.size),
       nextPlayer: 0,
-      turn: 0,
-      maxTurn: this.props.size * this.props.size,
-      playerScore: Array(this.props.player).fill(0),
+      playerScore: initScore(this.props.player),
     }
   }
 
-  handleClick(player, i) {
-    if(player !== this.state.nextPlayer || 
-      this.state.turn >= this.state.maxTurn ||
-      this.state.blockState[player][i] >= 1) return;
+  getBoardLookupIndexByValue(player, value) {
+    return this.state.bingoIndexLookup[player][value];
+  }
 
-    const activeValue = this.state.bingo[player][i] - 1;
+  handleClick(player, index) {
+
+    const winner = this.state.playerScore.find((score) => 
+      score >= this.props.winnerRule
+    );
+
+
+    if(player !== this.state.nextPlayer || 
+      this.state.blockState[player][index] >= 1
+      || winner) return;
+
+    const clickedNumber = this.state.bingo[player][index] - 1;
     const blockState = [];
     const playerScore = [];
-    for(let p = 0; p < this.state.player; p++) {
-      const playerActiveState = this.state.blockState[p].slice();
-      let playerActiveValueIndex = this.state.bingoIndexLookup[p][activeValue];
-      playerActiveState[playerActiveValueIndex] = 1;
-      let score = calculatePlayerScore(playerActiveState, this.state.size);
-      blockState.push(playerActiveState);
+    for(let p = 0; p < this.props.player; p++) {
+      let lookupIndex = this.getBoardLookupIndexByValue(p, clickedNumber);
+      const playerBoardState = this.state.blockState[p].slice();
+      playerBoardState[lookupIndex] = 1;
+      let score = calculatePlayerScore(playerBoardState, this.props.size);
+      blockState.push(playerBoardState);
       playerScore.push(score);
     }
-
-
-
     this.setState({
       blockState: blockState,
-      nextPlayer: (this.state.nextPlayer + 1) % this.state.player,
-      turn: this.state.turn+1,
+      nextPlayer: (this.state.nextPlayer + 1) % this.props.player,
       playerScore: playerScore,
     })
   }
@@ -108,21 +110,18 @@ class Game extends React.Component{
       score >= this.props.winnerRule
     );
 
-    console.log(winner);
     const gameBoard = this.state.bingo.map((squares, player) => {
       let className = 'bingoBoard';
-      
-      if(player === this.state.nextPlayer) {
+      if(player === this.state.nextPlayer && !winner.find(e => e === true)) {
         className += ' bingoPlayerTurn';
       }
-
       let winnerText = '';
       if(winner[player]) winnerText = 'You WIN!';
       return(
         <div className={className}>
           Player #{player}, Score={this.state.playerScore[player]} {winnerText}
           <Board 
-          size={this.state.size}
+          size={this.props.size}
           bingo={this.state.bingo[player]}
           blockState={this.state.blockState[player]}
           onClick={(e, i) => this.handleClick(player, i)}
@@ -132,7 +131,14 @@ class Game extends React.Component{
     })
 
     let gameText = 'Next player ' + this.state.nextPlayer;
-    
+    if(winner.find(t=> t === true)) {
+      gameText = 'Congrats!! Winner: player ';
+      winner.map((val, ind) => {
+        if(val === true) gameText += '#' + ind + ' ';
+      })
+    }
+
+
     return(
       <div>
         <h1>{gameText}</h1>
@@ -157,15 +163,12 @@ class GameStarter extends React.Component{
 
   handleChange(event) {
     this.setState({
-      [event.target.name]: event.target.value
+      [event.target.name]: event.target.value,
     })
   }
 
   handleSubmit(event) {
     this.setState({
-      player: this.state.player,
-      size: this.state.size,
-      winnerRule: this.state.winnerRule,
       submitted: true,
     })
     event.preventDefault();
@@ -192,7 +195,7 @@ class GameStarter extends React.Component{
             onChange={this.handleChange} />
         </label>        
         <label>
-          Winner Score:
+          Winner Score: (Should be less than {this.state.size*2 + 2})
           <input
             name="winnerRule"
             type="number"
@@ -204,7 +207,8 @@ class GameStarter extends React.Component{
       {this.state.submitted && <Game 
         size={this.state.size} 
         player={this.state.player} 
-        winnerRule={this.state.winnerRule}/>
+        winnerRule={this.state.winnerRule}
+        />
       }
       </div>
     );
@@ -227,7 +231,7 @@ function shuffle(old_array) {
   return array;
 }
 
-function initializePlayerBoard(player, boardLineSize) {
+function initBingoBoard(player, boardLineSize) {
   let bingo = Array(boardLineSize * boardLineSize).fill(0)
               .map((e, i) => i + 1);
   const playerBoard = [];
@@ -237,7 +241,7 @@ function initializePlayerBoard(player, boardLineSize) {
   }
   return playerBoard;
 }
-function initializePlayerBoardLookup(allBingo) {
+function initBingoLookup(allBingo) {
   const allbingoIndexLookup = [];
   for(let i = 0; i < allBingo.length; i++) {
     const bingo = allBingo[i].slice();
@@ -249,7 +253,7 @@ function initializePlayerBoardLookup(allBingo) {
   }
   return allbingoIndexLookup;
 }
-function initializePlayerBoardState(player, boardLineSize) {
+function initState(player, boardLineSize) {
   let blockState = Array(boardLineSize*boardLineSize).fill(0);
   let activeArray = [];
   for(let i = 0; i < player; i++) {
@@ -295,13 +299,6 @@ function getWinIndex(boardLineSize) {
   return winIndexArray;
 }
 
-function calculateWinner(player, activeState) {
-  let rowLength = activeState[0].length;
-  const winIndexArray = getWinIndex(rowLength);
-  for(let i = 0; i < player; i++) {
-  }
-}
-
 function calculatePlayerScore(activeBoard, boardLineSize) {
   const winIndexArray = getWinIndex(boardLineSize);
   let score = 0;
@@ -318,4 +315,10 @@ function calculatePlayerScore(activeBoard, boardLineSize) {
     }
   }
   return score;
+}
+
+function initScore(player) {
+  let playerScore = new Array(player).fill(0);
+  for(let i = 0; i < player; i++) playerScore[i] = 0;
+  return playerScore;
 }
