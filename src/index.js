@@ -29,6 +29,9 @@ class Game extends React.Component{
       bingo: allBingo,
       key: this.initializePlayerBoardKey(allBingo),
       isActive: this.initializePlayerBoardState(),
+      nextPlayer: 0,
+      turn: 0,
+      maxTurn: this.props.size * this.props.size,
     }
   }
 
@@ -49,7 +52,7 @@ class Game extends React.Component{
       const bingo = allBingo[i].slice();
       const key = [];
       for(let j = 0; j < allBingo[i].length; j++) {
-        key[bingo[j]] = j;
+        key[bingo[j] - 1] = j;
       }
       allKey.push(key);
     }
@@ -66,20 +69,21 @@ class Game extends React.Component{
   }
 
   handleClick(player, i) {
-    const value = this.state.bingo[player][i]
-    console.log(player + ' is click on ', value);
-
+    if(player !== this.state.nextPlayer || this.state.turn >= this.state.maxTurn) return;
+    const activeValue = this.state.bingo[player][i] - 1;
     const isActive = [];
     for(let p = 0; p < this.state.player; p++) {
-      const playerActive = this.state.isActive[p].slice();
-      let playerValueIndex = this.state.key[p][value];
-      playerActive[playerValueIndex] = true;
-      isActive.push(playerActive);
-      console.log('player#' + p + ', index = ' + playerValueIndex);
+      const playerActiveState = this.state.isActive[p].slice();
+      let playerActiveValueIndex = this.state.key[p][activeValue];
+      if(playerActiveState[playerActiveValueIndex]) return;
+      playerActiveState[playerActiveValueIndex] = true;
+      isActive.push(playerActiveState);
     }
 
     this.setState({
       isActive: isActive,
+      nextPlayer: (this.state.nextPlayer + 1) % this.state.player,
+      turn: this.state.turn+1,
     })
   }
 
@@ -111,8 +115,12 @@ class Game extends React.Component{
         </div>
       ))
     }
+    let className = 'bingoBoard';
+    if(player === this.state.nextPlayer) {
+      className += ' bingoPlayerTurn';
+    }
     return(
-      <div className="bingoBoard">
+      <div className={className}>
         Player #{player}
         {renderBoard}
       </div>
@@ -125,7 +133,10 @@ class Game extends React.Component{
       gameBoard.push(this.renderBoard(i));
     }
     return(
-      gameBoard
+      <div>
+        <h1>Next player {this.state.nextPlayer}</h1>
+        {gameBoard}
+      </div>
     )
   }
 }

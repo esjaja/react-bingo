@@ -16,11 +16,18 @@
   margin-left: 50px;
 
 .bingoBoard
-    position: relative
+    display: inline-block
     margin: 20px
+    filter: brightness(70%)
+
+.bingoPlayerTurn
+    filter: inherit
 
 .bingoClick
-    filter: brightness(90%)
+    filter: brightness(50%)
+    cursor: default;
+    &:hover
+        filter: brightness(50%)
 
 .bingoRow 
   display: flex;
