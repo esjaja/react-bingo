@@ -11,3 +11,28 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+* {
+  box-sizing: border-box;
+}
+
+#root {
+  margin-top: 50px;
+  margin-left: 50px;
+}
+
+.bingoBlock {
+  width: 50px;
+  height: 50px;
+  border: solid 1px black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.bingoRow {
+  display: flex;
+  flex-direction: row;
+}
