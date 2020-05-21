@@ -1,22 +1,44 @@
 #root 
   margin-top: 50px
-  margin-left: 50px
+  width: 1200px
+  margin-left: auto
+  margin-right: auto
+  padding: 20px
+  display: flex
+  justify-content: center
+  background: linear-gradient(#e3f0f1, #dae4e2)
+
+.game
+    text-align: center
+
+label
+    font-weight: 500
+    display: block
+    &::before
+        content: "- "
+    input
+        display: inline-block
+        margin: 5px
+        border-radius: 2px
+.submitButton
+    font-weight: 500
+    padding: 5px 10px
+    font-size: 16px
+    background: #a3f1d7
+    
 
 .bingoBlock 
   width: 50px
   height: 50px
-  border: solid 1px black
-  display: flex
-  justify-content: center
-  align-items: center
   font-size: 25px
   cursor: pointer
-  background-color: #efefef
+  user-select: none
+  border: solid 1px #84969e
+  color: #010201
+  background-color: #a3d8e6
   &:hover
       filter: brightness(90%)
-input
-    display: block
-    margin: 5px
+
     
 .bingoClick
     filter: brightness(50%)
@@ -28,20 +50,44 @@ input
         position: absolute
         height: 80%
         color: black
-        border: solid 2px black
+        border: solid 2px #274c83
         transform: rotate(45deg)
         opacity: 0
     &.active:after
         opacity: 1
 
+.bingoRow 
+  display: flex
+  flex-direction: row
+
 .bingoBoard
     display: inline-block
     margin: 20px
     filter: brightness(70%)
+    color: #0f184e
+    font-size: 16px
+    .bingoPlayerText
+        width: 100%
+        .playerNumber
+            display: inline-block
+            width: 40%
+        .playerScore
+            width: 60%
+            text-align: center
+            display: inline-block
+            &::after
+                content: "You Win!"
+                color: red
+                font-weight: 500
+                display: none
+            &.active::after
+                display: inherit
 
 .bingoPlayerTurn
     filter: inherit
 
-.bingoRow 
-  display: flex
-  flex-direction: row
+.bingoPlayerWin
+    filter: inherit
+    box-shadow: 0px 0px 10px 0px
+
+

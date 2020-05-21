@@ -112,14 +112,28 @@ class Game extends React.Component{
 
     const gameBoard = this.state.bingo.map((squares, player) => {
       let className = 'bingoBoard';
+      if(winner[player]) {
+        className += ' bingoPlayerWin';
+      }
       if(player === this.state.nextPlayer && !winner.find(e => e === true)) {
         className += ' bingoPlayerTurn';
       }
-      let winnerText = '';
-      if(winner[player]) winnerText = 'You WIN!';
+
+      let scoreClass = 'playerScore';
+      if(winner[player]) {
+        scoreClass += ' active';
+      }
+
       return(
         <div className={className}>
-          Player #{player}, Score={this.state.playerScore[player]} {winnerText}
+          <div className='bingoPlayerText'>
+            <span className='playerNumber'>
+              Player #{player}
+            </span>
+            <span className={scoreClass}>
+              {'Score:' + this.state.playerScore[player] +  ' '}
+            </span>
+          </div>
           <Board 
           size={this.props.size}
           bingo={this.state.bingo[player]}
@@ -140,7 +154,7 @@ class Game extends React.Component{
 
 
     return(
-      <div>
+      <div className="game">
         <h1>{gameText}</h1>
         {gameBoard}
       </div>
@@ -195,14 +209,14 @@ class GameStarter extends React.Component{
             onChange={this.handleChange} />
         </label>        
         <label>
-          Winner Score: (Should be less than {this.state.size*2 + 2})
+          {'Winner Score ( <= ' + (this.state.size*2 + 2) + ' )'}: 
           <input
             name="winnerRule"
             type="number"
             value={this.state.winnerRule}
             onChange={this.handleChange} />
         </label>
-        <input type="submit" value="Submit"/>
+        <input className='submitButton' type="submit" value="Submit"/>
       </form>        
       {this.state.submitted && <Game 
         size={this.state.size} 
