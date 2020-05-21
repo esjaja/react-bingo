@@ -12,8 +12,5 @@ Click on blocks which are already pressed is invalid.
 ![image](https://github.com/esjaja/react-bingo/blob/master/demo/handleClick.gif)
 
 
-### `npm install`
-
-
-### `npm start`
-Runs the app in http://localhost:3000
+### Play
+https://esjaja.github.io/react-bingo
