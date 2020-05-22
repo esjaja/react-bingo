@@ -29,7 +29,6 @@ export default class Game extends React.Component {
             nextPlayer: 0,
             playerScore: initScore(this.props.player),
         }
-        this.handleClick.bind(this);
     }
 
     getBoardLookupIndexByValue(player, value) {
@@ -125,12 +124,8 @@ export default class Game extends React.Component {
 }
 
 
-
-
-
-
 function calculatePlayerScore(activeBoard, boardLineSize) {
-    const winIndexArray = getWinIndex(boardLineSize);
+    const winIndexArray = computeIndexToScore(boardLineSize);
     let score = 0;
     for (let i = 0; i < winIndexArray.length; i++) {
         let connect = true;
@@ -145,6 +140,43 @@ function calculatePlayerScore(activeBoard, boardLineSize) {
         }
     }
     return score;
+}
+
+function computeIndexToScore(boardLineSize) {
+    let winIndexArray = [];
+    // row
+    for (let i = 0; i < boardLineSize; i++) {
+        let rowArray = [];
+        for (let j = 0; j < boardLineSize; j++) {
+            rowArray.push(i * boardLineSize + j);
+        }
+        winIndexArray.push(rowArray);
+    }
+
+    // col
+    for (let i = 0; i < boardLineSize; i++) {
+        let colArray = [];
+        for (let j = 0; j < boardLineSize; j++) {
+            colArray.push(j * boardLineSize + i);
+        }
+        winIndexArray.push(colArray);
+    }
+
+    // cross line
+    let crossLine = [];
+    for (let i = 0; i < boardLineSize; i++) {
+        crossLine.push(i + boardLineSize * i);
+    }
+    winIndexArray.push(crossLine);
+
+    let crossLine2 = [];
+
+    for (let i = 0; i < boardLineSize; i++) {
+        crossLine2.push((boardLineSize - 1) + (boardLineSize - 1) * i);
+    }
+    winIndexArray.push(crossLine2);
+
+    return winIndexArray;
 }
 
 function initScore(player) {
@@ -183,44 +215,6 @@ function initState(player, boardLineSize) {
     }
     return activeArray;
 }
-
-function getWinIndex(boardLineSize) {
-    let winIndexArray = [];
-    // row
-    for (let i = 0; i < boardLineSize; i++) {
-        let rowArray = [];
-        for (let j = 0; j < boardLineSize; j++) {
-            rowArray.push(i * boardLineSize + j);
-        }
-        winIndexArray.push(rowArray);
-    }
-
-    // col
-    for (let i = 0; i < boardLineSize; i++) {
-        let colArray = [];
-        for (let j = 0; j < boardLineSize; j++) {
-            colArray.push(j * boardLineSize + i);
-        }
-        winIndexArray.push(colArray);
-    }
-
-    // cross line
-    let crossLine = [];
-    for (let i = 0; i < boardLineSize; i++) {
-        crossLine.push(i + boardLineSize * i);
-    }
-    winIndexArray.push(crossLine);
-
-    let crossLine2 = [];
-
-    for (let i = 0; i < boardLineSize; i++) {
-        crossLine2.push((boardLineSize - 1) + (boardLineSize - 1) * i);
-    }
-    winIndexArray.push(crossLine2);
-
-    return winIndexArray;
-}
-
 
 function shuffle(old_array) {
     const array = old_array.slice();

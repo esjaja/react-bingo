@@ -11,7 +11,12 @@ class GameStarter extends React.Component{
       player: this.props.player,
       size: this.props.size,
       winnerRule: this.props.winnerRule,
-      submitted: false
+      submitted: false,
+      game: () => <Game 
+        size={this.state.size} 
+        player={this.state.player} 
+        winnerRule={this.state.winnerRule}
+        />
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -24,13 +29,18 @@ class GameStarter extends React.Component{
   }
 
   handleSubmit(event) {
-    this.setState({
-      submitted: true,
-    })
     event.preventDefault();
+    this.setState({
+      game: () => <Game 
+      size={this.state.size} 
+      player={this.state.player} 
+      winnerRule={this.state.winnerRule}
+      />
+    })
   }
 
   render() {
+    const ActiveGame = this.state.game;
     return (
       <div>
       <form onSubmit={this.handleSubmit}>
@@ -39,6 +49,7 @@ class GameStarter extends React.Component{
           <input
             name="player"
             type="number"
+            min="1"
             value={this.state.player}
             onChange={this.handleChange} />
         </label>        
@@ -47,24 +58,24 @@ class GameStarter extends React.Component{
           <input
             name="size"
             type="number"
+            min="1"
             value={this.state.size}
             onChange={this.handleChange} />
         </label>        
         <label>
-          {'Winner Score ( <= ' + (this.state.size*2 + 2) + ' )'}: 
+          {'Winner Score ( 1 ~ ' + (this.state.size*2 + 2) + ' )'}: 
           <input
             name="winnerRule"
             type="number"
+            min="1"
+            max={(this.state.size*2 + 2)}
             value={this.state.winnerRule}
             onChange={this.handleChange} />
         </label>
-        <input className='submitButton' type="submit" value="Submit"/>
+        <input className='submitButton' type="submit" value="Start New Game"/>
       </form>        
-      {this.state.submitted && <Game 
-        size={this.state.size} 
-        player={this.state.player} 
-        winnerRule={this.state.winnerRule}
-        />
+      {
+        <ActiveGame/>
       }
       </div>
     );
