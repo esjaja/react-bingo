@@ -41,22 +41,22 @@ label
 
     
 .bingoClick
-    filter: brightness(50%)
+    // filter: brightness(50%)
     position: relative
     cursor: default
     &:hover
         filter: brightness(50%)
     &:after
-        content: ""
+        content: "X"
         position: absolute
         height: 100%
-        top: 0
-        left: 50%
-        border-right: solid 5px #274c83
-        transform: rotate(45deg)
-        opacity: 0
-    &.active:after
+        font-size: 40px
+        color: rgba(250, 112, 32, 0.7)
+        display: flex
+        align-items: center
         opacity: 1
+    &.active
+        background: #fcff49
 
 .bingoRow 
   display: flex
